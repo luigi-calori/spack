@@ -22,20 +22,34 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+
 from spack import *
 
-class Mpfr(Package):
-    """The MPFR library is a C library for multiple-precision
-       floating-point computations with correct rounding."""
-    homepage = "http://www.mpfr.org"
-    url      = "http://www.mpfr.org/mpfr-current/mpfr-3.1.3.tar.bz2"
 
-    version('3.1.3', '5fdfa3cfa5c86514ee4a241a1affa138')
-    version('3.1.2', 'ee2c3ac63bf0c2359bf08fc3ee094c19')
+class Elpa(Package):
+    """
+    Eigenvalue solvers for Petaflop-Applications (ELPA)
+    """
 
-    depends_on('gmp')
+    homepage = 'http://elpa.mpcdf.mpg.de/'
+    url = 'http://elpa.mpcdf.mpg.de/elpa-2015.11.001.tar.gz'
+
+    version('2015.11.001', 'de0f35b7ee7c971fd0dca35c900b87e6', url='http://elpa.mpcdf.mpg.de/elpa-2015.11.001.tar.gz')
+
+    variant('openmp', default=False, description='Activates OpenMP support')
+
+    depends_on('mpi')
+    depends_on('blas')
+    depends_on('lapack')
+    depends_on('scalapack')
 
     def install(self, spec, prefix):
-        configure("--prefix=%s" % prefix)
+
+        options = ["--prefix=%s" % prefix]
+
+        if '+openmp' in spec:
+            options.append("--enable-openmp")
+
+        configure(*options)
         make()
         make("install")
